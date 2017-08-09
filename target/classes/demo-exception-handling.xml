@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:json="http://www.mulesoft.org/schema/mule/json" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xmlns:spring="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-current.xsd
+http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/json/current/mule-json.xsd">
+    <flow name="demo-exception-handlingFlow">
+        <http:listener config-ref="HTTP_Listener_Configuration" path="/test" doc:name="HTTP"/>
+        <json:json-to-object-transformer returnClass="java.util.HashMap" doc:name="JSON to Object"/>
+        <custom-filter class="com.home.tharanga.InputDataValidator" doc:name="Custom"/>
+        <logger level="INFO" doc:name="Logger" message="payload:  #[payload]"/>
+        <logger level="INFO" doc:name="Logger" message="#[message]"/>
+        <set-payload value="paload: #[payload]" doc:name="Set Payload"/>
+    </flow>
+    <choice-exception-strategy name="demo-exception-handlingChoice_Exception_Strategy">
+        <catch-exception-strategy doc:name="Catch Missing Data Exception Strategy" when="#[exception.causedBy(java.util.NullPointerException)]">
+            <set-payload value="missing data: #[payload]" doc:name="Set Payload"/>
+            <variable-transformer doc:name="Variable"/>
+            <set-variable variableName="reason" value="Missing DATA" doc:name="Variable"/>
+        </catch-exception-strategy>
+        <catch-exception-strategy doc:name="Catch Invalid Data Exception Strategy" when="#[exception.causedBy(java.util.IllegalArgumentException)]">
+            <set-payload value="Invalid data: #[payload]" doc:name="Set Payload"/>
+            <variable-transformer doc:name="Variable"/>
+            <set-variable variableName="reason" value="Invalid DATA" doc:name="Variable"/>
+        </catch-exception-strategy>
+    </choice-exception-strategy>
+</mule>
