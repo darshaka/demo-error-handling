@@ -14,6 +14,7 @@ http://www.mulesoft.org/schema/mule/json http://www.mulesoft.org/schema/mule/jso
         <logger level="INFO" doc:name="Logger" message="payload:  #[payload]"/>
         <logger level="INFO" doc:name="Logger" message="#[message]"/>
         <set-payload value="paload: #[payload]" doc:name="Set Payload"/>
+        <exception-strategy ref="demo-exception-handlingChoice_Exception_Strategy" doc:name="Reference Exception Strategy"/>
     </flow>
     <choice-exception-strategy name="demo-exception-handlingChoice_Exception_Strategy">
         <catch-exception-strategy doc:name="Catch Missing Data Exception Strategy" when="#[exception.causedBy(java.util.NullPointerException)]">
